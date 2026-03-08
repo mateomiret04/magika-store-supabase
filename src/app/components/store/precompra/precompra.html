@@ -1,0 +1,80 @@
+<div *ngIf="producto" class="fixed inset-0 z-[9999] flex items-center justify-center p-0 sm:p-6 md:p-8 overflow-y-auto bg-white sm:bg-transparent" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+  
+  <div (click)="cerrarModal()" class="fixed inset-0 bg-gray-950/60 backdrop-blur-sm transition-opacity hidden sm:block" aria-hidden="true"></div>
+
+  <div class="relative bg-white sm:rounded-3xl shadow-2xl shadow-gray-950/10 w-full h-full sm:h-auto max-w-4xl overflow-y-auto sm:overflow-hidden transform transition-all animate-fade-in-up">
+    
+    <button (click)="cerrarModal()" class="absolute top-4 right-4 sm:top-6 sm:right-6 text-gray-400 hover:text-magika-verde transition-colors z-20 bg-white/80 backdrop-blur-md rounded-full p-2 shadow-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-0 min-h-full">
+      
+      <div class="relative aspect-square md:aspect-auto bg-gray-50 overflow-hidden">
+        <img [src]="producto.imagen_url || 'assets/placeholder-magika.jpg'" 
+             [alt]="producto.nombre" 
+             class="w-full h-full object-cover">
+      </div>
+
+      <div class="p-6 sm:p-10 md:p-12 flex flex-col justify-between bg-white h-full">
+        <div>
+          <span class="text-[11px] text-gray-400 font-light uppercase tracking-widest mb-2 block">
+            {{ producto.categoria || 'Colección Deco' }}
+          </span>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-medium text-gray-800 tracking-tight mb-4 italic leading-tight">
+            {{ producto.nombre }}
+          </h2>
+
+          <div class="mb-6 sm:mb-8">
+            <div *ngIf="producto.descuento > 0" class="h-6 flex items-end mb-1">
+              <span class="text-gray-400 text-sm sm:text-base font-light" style="text-decoration: line-through;">
+                $ {{ producto.precio_base | number:'1.2-2' }}
+              </span>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <p class="text-magika-verde font-semibold text-2xl sm:text-4xl tracking-tight">
+                $ {{ (producto.descuento > 0 ? (producto.precio_base * (1 - producto.descuento / 100)) : producto.precio_base) | number:'1.2-2' }}
+              </p>
+              <span *ngIf="producto.descuento > 0" class="text-magika-verde text-[10px] sm:text-xs font-bold uppercase tracking-wider">
+                {{ producto.descuento }}% OFF
+              </span>
+            </div>
+          </div>
+          
+          <div class="border-t border-gray-100 pt-6 sm:pt-8 mb-8 sm:mb-10">
+            <h4 class="text-xs uppercase tracking-widest text-gray-400 font-medium mb-3">Detalles del objeto</h4>
+            <p class="text-gray-600 font-light text-sm leading-relaxed italic">
+              {{ producto.descripcion || 'Objeto seleccionado con amor para llenar de alma tu hogar. Materiales nobles y diseño consciente.' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="space-y-6 mt-auto">
+          <div class="flex items-center gap-4">
+            <span class="text-xs uppercase tracking-widest text-gray-400 font-medium">Cantidad</span>
+            <div class="flex items-center border border-gray-100 rounded-full px-2 py-1 bg-gray-50/50">
+              <button (click)="cambiarCantidad(-1)" class="px-3 py-1 text-gray-400 hover:text-magika-verde transition-colors text-xl">-</button>
+              <span class="px-4 text-gray-800 font-medium text-lg w-12 text-center">{{ cantidad }}</span>
+              <button (click)="cambiarCantidad(1)" class="px-3 py-1 text-gray-400 hover:text-magika-verde transition-colors text-xl">+</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 pb-4 sm:pb-0">
+            <button (click)="agregarYContinuar()" 
+                    class="w-full py-4 bg-gray-900 text-white text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium rounded-2xl hover:bg-gray-800 transition-all active:scale-[0.98]">
+              Añadir
+            </button>
+            
+            <button (click)="comprarAhora()" 
+                    class="w-full py-4 bg-magika-verde text-white text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium rounded-2xl shadow-lg shadow-magika-verde/20 hover:bg-opacity-90 transition-all active:scale-[0.98]">
+              Comprar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

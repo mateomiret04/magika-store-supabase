@@ -1,0 +1,43 @@
+<nav class="fixed top-0 left-0 w-full z-[110] flex items-center justify-between px-8 py-2 shadow-xl transition-all duration-500"
+     [class.bg-magika-verde]="!isScrolled"
+     [class.bg-magika-verde/85]="isScrolled"
+     [class.backdrop-blur-md]="isScrolled"
+     [style.height]="isScrolled ? '70px' : '85px'">
+  
+  <div class="flex items-center gap-6 cursor-pointer">
+    <div class="flex items-center">
+      <img src="18.png" 
+           alt="Magika Logo" 
+           [style.height]="isScrolled ? '50px' : '65px'"
+           style="display: block; object-fit: contain; width: auto; transition: all 0.3s ease; filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.1));">
+    </div>
+    
+    <div class="hidden sm:flex items-center gap-4 border-l border-white/30 pl-4">
+      <span class="text-white/90 text-[10px] font-light tracking-[0.3em] uppercase">
+        Deco & Regalería
+      </span>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4">
+    
+    <div (click)="irAlCarrito()" 
+         class="relative group cursor-pointer p-2 transition-all active:scale-95 flex items-center justify-center"
+         title="Ver mi carrito">
+  
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" 
+           class="w-8 h-8 text-white transition-transform group-hover:scale-105">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+      </svg>
+
+      <span *ngIf="cantidadCarrito > 0" 
+            class="absolute top-0.5 right-1 flex items-center justify-center pointer-events-none animate-in fade-in zoom-in duration-300">
+        <span class="text-white text-[10px] font-black drop-shadow-md">
+          {{ cantidadCarrito }}
+        </span>
+      </span>
+    </div>
+  </div>
+</nav>
+
+<div [style.height]="isScrolled ? '70px' : '85px'" class="transition-all duration-500"></div>

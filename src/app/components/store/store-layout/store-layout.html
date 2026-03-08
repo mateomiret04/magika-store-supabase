@@ -1,0 +1,109 @@
+<div *ngIf="cargandoEfecto" class="fixed inset-0 flex flex-col items-center justify-center bg-[#739883] z-[9999]">
+  <div class="relative">
+    <img 
+      src="12.png" 
+      alt="Magika Deco" 
+      class="h-40 w-auto object-contain animate-magika-reveal">
+  </div>
+</div>
+
+<div [hidden]="cargandoEfecto" class="animate-in fade-in duration-700 bg-white min-h-screen flex flex-col">
+  
+  <app-navbar-store (clickCarrito)="toggleCarrito(true)"></app-navbar-store>
+
+  <main [class.blur-sm]="mostrarCarrito" class="transition-all duration-500 flex-grow">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+      
+      <div class="relative max-w-md mb-3">
+        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </span>
+        <input 
+          type="text"
+          (input)="onSearch($event)"
+          placeholder="Buscar productos" 
+          class="block w-full py-2 pl-10 pr-4 text-gray-700 bg-white border border-gray-100 rounded-2xl focus:border-magika-verde focus:ring-opacity-40 focus:outline-none focus:ring focus:ring-magika-verde/10 transition-all duration-300 shadow-sm text-sm"
+        >
+      </div>
+
+      <div class="bg-white py-2 mb-">
+        <div class="flex flex-nowrap items-center gap-x-6 overflow-x-auto scrollbar-hide">
+          <button 
+            (click)="seleccionarCategoria('Todas')"
+            class="text-sm transition-all whitespace-nowrap decoration-magika-verde decoration-2 underline-offset-8 shrink-0"
+            [class.font-medium]="categoriaSeleccionada === 'Todas'"
+            [class.text-magika-verde]="categoriaSeleccionada === 'Todas'"
+            [class.underline]="categoriaSeleccionada === 'Todas'"
+            [class.font-normal]="categoriaSeleccionada !== 'Todas'"
+            [class.text-gray-400]="categoriaSeleccionada !== 'Todas'">
+            Todas
+          </button>
+          
+          <button 
+            *ngFor="let cat of categoriasUnicas"
+            (click)="seleccionarCategoria(cat)"
+            class="text-sm transition-all whitespace-nowrap capitalize decoration-magika-verde decoration-2 underline-offset-8 shrink-0"
+            [class.font-medium]="categoriaSeleccionada === cat"
+            [class.text-magika-verde]="categoriaSeleccionada === cat"
+            [class.underline]="categoriaSeleccionada === cat"
+            [class.font-normal]="categoriaSeleccionada !== cat"
+            [class.text-gray-400]="categoriaSeleccionada !== cat">
+            {{ cat }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <router-outlet></router-outlet>
+  </main>
+
+  <footer [class.blur-sm]="mostrarCarrito" class="bg-white border-t border-gray-100 mt-0 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-4 py-10">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+        
+        <div class="flex flex-col items-center md:items-start">
+          <img src="3.png" alt="Magika Deco" class="h-20 w-auto mb-3">
+        </div>
+
+        <div class="flex flex-col items-center text-center">
+          <h4 class="text-[11px] font-medium text-gray-700 uppercase tracking-[0.2em] mb-4">Contacto</h4>
+          <div class="space-y-2">
+            <a 
+              href="https://wa.me/5493447510342" 
+              target="_blank" 
+              class="block text-sm text-gray-600 font-light hover:text-magika-verde transition-colors duration-300">
+              +54 9 3447 51-0342
+            </a>
+            <a 
+              href="https://www.instagram.com/magika.deco.regaleria?igsh=cm04cDk2aDMyNGky" 
+              target="_blank" 
+              class="block text-sm text-gray-600 font-light hover:text-magika-verde transition-colors duration-300">
+              @magika.deco.regaleria
+            </a>
+          </div>
+        </div>
+
+        <div class="flex flex-col items-center md:items-end">
+          <p class="text-[9px] text-gray-500 mt-4 uppercase tracking-widest">© 2026 Magika Deco</p>
+        </div>
+
+      </div>
+
+      <div class="mt-4 pt-4 border-t border-gray-50 flex flex-col items-center justify-center">
+        <div class="flex items-center gap-3 text-gray-500 font-medium text-[11px] uppercase tracking-wider">
+          <span>Desarrollado por</span>
+          <img src="Copia de Sin título.png" alt="Miret Logo" class="h-8 w-auto object-contain">
+          <span>Mateo Miret</span>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+</div>
+
+<app-carrito 
+  *ngIf="mostrarCarrito" 
+  (cerrar)="toggleCarrito(false)">
+</app-carrito>

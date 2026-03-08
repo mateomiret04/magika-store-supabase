@@ -1,0 +1,78 @@
+<div class="fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] flex justify-end animate-in fade-in duration-300">
+  
+  <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 ease-out">
+    
+    <div class="px-6 py-8 border-b border-gray-50 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-medium text-gray-800 tracking-tight italic">Carrito</h1>
+      </div>
+      <button (click)="cerrarCarrito()" class="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-magika-verde transition-all active:scale-95">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="flex-1 overflow-y-auto px-6 py-4">
+      <div class="space-y-6">
+        <div *ngFor="let producto of productosEnCarrito; let i = index" 
+             class="group flex gap-4 items-center">
+          
+          <div class="h-24 w-20 flex-shrink-0 overflow-hidden rounded-2xl bg-gray-50 border border-gray-100">
+            <img [src]="producto.imagen_url || '12.png'" 
+                 class="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500">
+          </div>
+
+          <div class="flex-1">
+            <h3 class="text-gray-800 font-medium text-sm leading-tight italic">{{ producto.nombre }}</h3>
+            <p class="text-gray-400 text-[10px] font-light uppercase mt-1">{{ producto.categoria || 'Deco' }}</p>
+            <p class="text-magika-verde font-bold text-sm mt-2">
+              $ {{ producto.precio_base | number:'1.0-0' }} 
+              <span *ngIf="producto.descuento > 0" class="text-[10px] font-medium text-red-400 ml-1">
+                - {{ producto.descuento }}% OFF
+              </span>
+            </p>
+          </div>
+
+          <button (click)="eliminar(i)" class="text-gray-300 hover:text-red-400 transition-colors p-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+
+        <div *ngIf="productosEnCarrito.length === 0" class="py-20 text-center">
+          <p class="text-gray-400 font-light text-sm">Tu carrito está vacío.</p>
+          <button (click)="cerrarCarrito()" class="text-magika-verde hover:underline mt-4 text-sm font-medium">Volver a la tienda</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="p-6 bg-gray-50/50 border-t border-gray-100">
+      <div class="space-y-3 mb-6">
+        <div class="flex justify-between text-gray-500 font-light text-sm">
+          <span>Subtotal</span>
+          <span>$ {{ obtenerSubtotalBase() | number:'1.0-0' }}</span>
+        </div>
+        
+        <div *ngIf="obtenerTotalDescuentos() > 0" class="flex justify-between text-gray-500 font-light text-sm">
+          <span>Descuento</span>
+          <span>- $ {{ obtenerTotalDescuentos() | number:'1.0-0' }}</span>
+        </div>
+
+        <div class="flex justify-between text-gray-800 font-medium text-xl">
+          <span>Total</span>
+          <span>$ {{ (obtenerSubtotalBase() - obtenerTotalDescuentos()) | number:'1.0-0' }}</span>
+        </div>
+      </div>
+
+      <button 
+        [disabled]="productosEnCarrito.length === 0" 
+        (click)="finalizarPedido()"
+        class="w-full bg-magika-verde text-white py-3.5 rounded-3xl font-medium tracking-wide shadow-xl shadow-magika-verde/20 hover:bg-opacity-90 transition-all active:scale-[0.98] disabled:bg-gray-200 disabled:shadow-none">
+        Continuar compra
+      </button>
+    </div>
+
+  </div>
+</div>
