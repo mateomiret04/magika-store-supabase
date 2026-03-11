@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, of } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductoService {
   
-  // Guardamos los productos en un BehaviorSubject para que cualquier componente pueda acceder a ellos
+  // 1. Centralizamos los productos aquí. 
+  // Si ya tiene datos, los componentes los recibirán al instante.
   private productosSource = new BehaviorSubject<any[]>([]);
   productos$ = this.productosSource.asObservable();
 
@@ -25,21 +26,31 @@ export class ProductoService {
   constructor() { }
 
   /**
-   * 🚀 MÉTODO CLAVE: Recibe los productos desde Supabase (vía StoreLayout)
-   * y los distribuye a todos los componentes que estén escuchando.
+   * 🚀 MÉTODO CLAVE: Actualiza el estado global de productos.
+   * Si el array que llega tiene datos, marcamos que la carga terminó.
    */
   actualizarProductos(productos: any[]) {
-    console.log('📦 [ProductoService] Actualizando lista con', productos.length, 'productos de Supabase');
-    this.productosSource.next(productos);
-    this.productosListosSource.next(true); // Avisamos que la carga terminó
+    if (productos && productos.length > 0) {
+      console.log('📦 [ProductoService] Cache actualizado con', productos.length, 'productos.');
+      this.productosSource.next(productos);
+      this.productosListosSource.next(true); 
+    }
   }
 
   /**
-   * Retorna los productos como un Observable. 
-   * Lo mantenemos para que tus componentes actuales no se rompan.
+   * Retorna los productos actuales. 
+   * Si ya hay productos guardados, el componente los obtendrá de inmediato sin delay.
    */
   getProductos(): Observable<any[]> {
     return this.productos$;
+  }
+
+  /**
+   * 💡 MÉTODO DE INGENIERÍA: Permite al componente saber si ya tenemos datos
+   * para evitar mostrar pantallas de carga o "rueditas" innecesarias.
+   */
+  tieneProductos(): boolean {
+    return this.productosSource.getValue().length > 0;
   }
 
   // Notifica al Layout manualmente si fuera necesario
@@ -52,8 +63,16 @@ export class ProductoService {
     this.buscadorSource.next(term);
   }
 
-  // Actualiza la categoría desde el Navbar o el Layout
+  // Actualiza la categoría
   actualizarCategoria(categoria: string) {
     this.categoriaSource.next(categoria);
+  }
+
+  /**
+   * Útil si la dueña quiere forzar una actualización manual
+   */
+  limpiarCache() {
+    this.productosSource.next([]);
+    this.productosListosSource.next(false);
   }
 }

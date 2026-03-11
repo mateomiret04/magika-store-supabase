@@ -1,29 +1,30 @@
-<section class="py-12 bg-white">
+<section class="pt-3 pb-12 bg-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mt-0">
       
-      <div *ngFor="let producto of listaFiltrada" 
+      <div *ngFor="let producto of listaFiltrada; trackBy: trackByProductoId"
            (click)="abrirModal(producto)"
            class="group relative flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-500 shadow-md hover:shadow-[0_25px_60px_rgba(115,152,131,0.2)] cursor-pointer h-full">
         
         <div class="relative aspect-square overflow-hidden bg-gray-100">
-          <img [src]="producto.imagen_url && producto.imagen_url !== '' ? producto.imagen_url : 'assets/placeholder-magika.jpg'" 
-               [alt]="producto.nombre" 
-               class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-          
+          <img [src]="optimizarImagen(producto.imagen_url)" 
+                [alt]="producto.nombre"
+                loading="lazy" 
+                width="400" 
+                height="400"
+                class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                
           <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           </div>
         </div>
 
         <div class="px-4 sm:px-6 pt-3 pb-2 flex flex-col flex-grow text-left">
-          
-          <h3 class="text-gray-800 font-medium text-sm sm:text-lg leading-tight mb-1 line-clamp-2 italic">
+          <h3 class="text-gray-800 font-medium text-base sm:text-lg leading-tight mb-1 line-clamp-2 italic">
             {{ producto.nombre }}
           </h3>
 
           <div class="flex flex-col mb-2">
-            
             <div *ngIf="producto.descuento > 0" class="h-5 flex items-end">
               <span class="text-gray-400 text-xs sm:text-sm" style="text-decoration: line-through;">
                 $ {{ producto.precio_base | number:'1.2-2' }}
@@ -48,17 +49,14 @@
         </div>
 
         <button (click)="agregarAlCarrito(producto); $event.stopPropagation()" 
-                class="w-full py-4 bg-gray-50 border-t border-gray-100 text-gray-600 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium hover:bg-magika-verde hover:text-white transition-all duration-300 active:scale-95">
+                [class.bg-magika-verde]="productoEfectoId === producto.id"
+                [class.text-white]="productoEfectoId === producto.id"
+                class="w-full py-4 bg-gray-50 border-t border-gray-100 text-gray-600 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium transition-all duration-300 active:scale-95">
           Agregar al carrito
         </button>
 
       </div> 
     </div>
-
-    <div *ngIf="listaFiltrada.length === 0" class="text-center py-20">
-      <p class="text-gray-400 italic">No encontramos productos que coincidan con tu búsqueda...</p>
-    </div>
-
   </div>
 </section>
 

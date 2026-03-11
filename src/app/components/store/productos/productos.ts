@@ -12,7 +12,6 @@ import { PrecompraComponent } from '../precompra/precompra';
   styles: [], 
 })
 export class Productos implements OnInit {
-  // Evento para avisar al layout (Padre) que el dibujo terminó
   @Output() productosListos = new EventEmitter<void>();
 
   listaProductos: any[] = [];
@@ -23,6 +22,7 @@ export class Productos implements OnInit {
   
   cargando: boolean = false;
   productoSeleccionado: any = null;
+  productoEfectoId: number | null = null;
 
   constructor(
     private productoService: ProductoService,
@@ -31,39 +31,60 @@ export class Productos implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // 1. Cargamos los datos iniciales
-    this.cargarProductos();
+    // 1. Primero chequeamos si ya hay datos en el caché del servicio
+    if (this.productoService.tieneProductos()) {
+      this.usarDatosCache();
+    } else {
+      // Si no hay nada (primera vez que entra), cargamos normalmente
+      this.cargarProductos();
+    }
 
-    // 2. Escuchamos cambios en el buscador (con tipado explícito para evitar error TS7006)
+    // 2. Escuchamos cambios globales de búsqueda y categoría
     this.productoService.buscadorActual$.subscribe((termino: string) => {
       this.terminoBusqueda = termino;
       this.aplicarFiltros();
     });
 
-    // 3. Escuchamos cambios en las categorías (con tipado explícito)
     this.productoService.categoriaActual$.subscribe((cat: string) => {
       this.categoriaActual = cat;
       this.aplicarFiltros();
     });
   }
 
+  /**
+   * ⚡ Lógica para cuando ya tenemos los productos.
+   * Evita la "ruedita" de carga y el delay.
+   */
+  private usarDatosCache() {
+    this.productoService.getProductos().subscribe(data => {
+      this.listaProductos = data;
+      this.aplicarFiltros();
+      // Notificamos que ya está todo listo de inmediato
+      this.productoService.notificarCargaFinalizada(true);
+      this.productosListos.emit();
+      this.cdRef.detectChanges();
+    });
+  }
+
+  // Optimiza la URL de Supabase
+  optimizarImagen(url: string): string {
+    if (!url || url === '') return 'assets/placeholder-magika.jpg';
+    if (url.includes('supabase.co')) {
+      return `${url}?width=500&quality=75&format=webp`;
+    }
+    return url;
+  }
+
   cargarProductos() {
     this.productoService.getProductos().subscribe({
       next: (data: any[]) => {
         this.listaProductos = data;
-        console.log('📦 [Hijo] Datos recibidos de la API:', this.listaProductos.length);
-        
-        // Ejecutamos el filtro inicial
         this.aplicarFiltros();
-        
-        // 1. Forzamos a Angular a procesar los cambios
         this.cdRef.detectChanges(); 
         
-        // 2. BUFFER DE RENDERIZADO (300ms)
         setTimeout(() => {
           this.productoService.notificarCargaFinalizada(true);
           this.productosListos.emit(); 
-          console.log('🚀 [Hijo] Renderizado de cards completado. Avisando al Layout.');
         }, 300); 
       },
       error: (err) => {
@@ -75,24 +96,16 @@ export class Productos implements OnInit {
   }
 
   aplicarFiltros() {
-    // Si aún no hay productos, no filtramos
     if (!this.listaProductos || this.listaProductos.length === 0) return;
-
     const term = this.terminoBusqueda.toLowerCase().trim();
-
     this.listaFiltrada = this.listaProductos.filter(p => {
-      // Filtro de Categoría
       const coincideCategoria = this.categoriaActual === 'Todas' || p.categoria === this.categoriaActual;
-
-      // Filtro de Texto (Nombre, Descripción o Categoría)
       const coincideTexto = 
         p.nombre.toLowerCase().includes(term) || 
         (p.descripcion && p.descripcion.toLowerCase().includes(term)) ||
         (p.categoria && p.categoria.toLowerCase().includes(term));
-
       return coincideCategoria && coincideTexto;
     });
-
     this.cdRef.detectChanges();
   }
 
@@ -107,8 +120,16 @@ export class Productos implements OnInit {
   }
 
   agregarAlCarrito(producto: any) {
+    this.productoEfectoId = producto.id;
+    setTimeout(() => {
+      this.productoEfectoId = null;
+      this.cdRef.detectChanges();
+    }, 300);
     this.carritoService.agregarProducto(producto);
-    console.log(`✅ Agregado al carrito: ${producto.nombre}`);
     this.cdRef.detectChanges();
+  }
+
+  trackByProductoId(index: number, producto: any): number {
+    return producto.id;
   }
 }
