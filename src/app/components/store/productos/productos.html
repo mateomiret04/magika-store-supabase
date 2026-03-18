@@ -1,49 +1,47 @@
 <section class="pt-3 pb-12 bg-white">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-8 mt-0">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-6 sm:gap-x-8 mt-0">
       
       <div *ngFor="let producto of listaFiltrada; trackBy: trackByProductoId"
            (click)="abrirModal(producto)"
-           class="group relative flex flex-col bg-white rounded-2xl overflow-hidden transition-all duration-500 shadow-md hover:shadow-[0_25px_60px_rgba(115,152,131,0.2)] cursor-pointer h-full">
+           class="group relative flex flex-col bg-white rounded-lg overflow-hidden transition-all duration-500 shadow-md hover:shadow-[0_25px_60px_rgba(115,152,131,0.2)] cursor-pointer h-full border border-gray-50">
         
         <div class="relative aspect-square overflow-hidden bg-gray-100">
           <img [src]="optimizarImagen(producto.imagen_url)" 
                 [alt]="producto.nombre"
                 loading="lazy" 
-                width="400" 
-                height="400"
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
-                
-          <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          
+          <div class="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
+          <div class="absolute top-2 right-2 backdrop-blur-sm text-white text-[8px] px-2 py-0.5 rounded-full uppercase tracking-widest font-semibold"
+               style="background-color: rgba(115, 152, 131, 0.5);">
+            Stock: {{ producto.stock || 0 }}
           </div>
         </div>
 
-        <div class="px-4 sm:px-6 pt-3 pb-2 flex flex-col flex-grow text-left">
-          <h3 class="text-gray-800 font-medium text-base sm:text-lg leading-tight mb-1 line-clamp-2 italic">
+        <div class="px-3 sm:px-6 pt-3 sm:pt-4 pb-2 flex flex-col flex-grow text-left">
+          <h3 class="text-gray-800 font-medium text-sm sm:text-lg leading-tight mb-0 line-clamp-2 italic">
             {{ producto.nombre }}
           </h3>
 
-          <div class="flex flex-col mb-2">
-            <div *ngIf="producto.descuento > 0" class="h-5 flex items-end">
-              <span class="text-gray-400 text-xs sm:text-sm" style="text-decoration: line-through;">
+          <div class="flex flex-col mb-1 mt-0.5">
+            <div *ngIf="producto.descuento > 0" class="h-3 flex items-end">
+              <span class="text-gray-400 text-[10px] sm:text-xs" style="text-decoration: line-through;">
                 $ {{ producto.precio_base | number:'1.2-2' }}
               </span>
             </div>
 
-            <div class="flex items-center justify-between mt-0.5">
-              <div class="flex items-center gap-2 h-8">
-                <p class="text-magika-verde font-medium text-base sm:text-xl tracking-tight leading-none flex items-center">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-0">
+              <div class="flex items-center gap-1.5 h-6 sm:h-8">
+                <p class="text-magika-verde font-semibold text-sm sm:text-xl tracking-tight leading-none">
                   $ {{ (producto.descuento > 0 ? (producto.precio_base * (1 - producto.descuento / 100)) : producto.precio_base) | number:'1.2-2' }}
                 </p>
-                <span *ngIf="producto.descuento > 0" class="text-magika-verde text-[10px] font-bold uppercase leading-none flex items-center h-full">
+                <span *ngIf="producto.descuento > 0" class="text-magika-verde text-[8px] sm:text-[10px] font-bold uppercase">
                   {{ producto.descuento }}% OFF
                 </span>
               </div>
-              
-              <span class="text-gray-400 text-[9px] sm:text-[10px] uppercase tracking-widest font-light">
-                Stock: {{ producto.stock || 0 }}
-              </span>
             </div>
           </div>
         </div>
@@ -51,7 +49,9 @@
         <button (click)="agregarAlCarrito(producto); $event.stopPropagation()" 
                 [class.bg-magika-verde]="productoEfectoId === producto.id"
                 [class.text-white]="productoEfectoId === producto.id"
-                class="w-full py-4 bg-gray-50 border-t border-gray-100 text-gray-600 text-[9px] sm:text-[10px] uppercase tracking-[0.2em] font-medium transition-all duration-300 active:scale-95">
+                [class.bg-gray-50]="productoEfectoId !== producto.id"
+                [class.text-gray-600]="productoEfectoId !== producto.id"
+                class="w-full py-3 sm:py-4 border-t border-gray-100 text-[8px] sm:text-[10px] uppercase tracking-[0.15em] font-medium transition-all duration-300 active:scale-95">
           Agregar al carrito
         </button>
 

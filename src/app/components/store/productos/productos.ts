@@ -31,15 +31,12 @@ export class Productos implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // 1. Primero chequeamos si ya hay datos en el caché del servicio
     if (this.productoService.tieneProductos()) {
       this.usarDatosCache();
     } else {
-      // Si no hay nada (primera vez que entra), cargamos normalmente
       this.cargarProductos();
     }
 
-    // 2. Escuchamos cambios globales de búsqueda y categoría
     this.productoService.buscadorActual$.subscribe((termino: string) => {
       this.terminoBusqueda = termino;
       this.aplicarFiltros();
@@ -51,22 +48,16 @@ export class Productos implements OnInit {
     });
   }
 
-  /**
-   * ⚡ Lógica para cuando ya tenemos los productos.
-   * Evita la "ruedita" de carga y el delay.
-   */
   private usarDatosCache() {
     this.productoService.getProductos().subscribe(data => {
       this.listaProductos = data;
       this.aplicarFiltros();
-      // Notificamos que ya está todo listo de inmediato
       this.productoService.notificarCargaFinalizada(true);
       this.productosListos.emit();
       this.cdRef.detectChanges();
     });
   }
 
-  // Optimiza la URL de Supabase
   optimizarImagen(url: string): string {
     if (!url || url === '') return 'assets/placeholder-magika.jpg';
     if (url.includes('supabase.co')) {
@@ -120,13 +111,18 @@ export class Productos implements OnInit {
   }
 
   agregarAlCarrito(producto: any) {
+    // 1. Disparamos el efecto visual
     this.productoEfectoId = producto.id;
-    setTimeout(() => {
-      this.productoEfectoId = null;
-      this.cdRef.detectChanges();
-    }, 300);
+    
+    // 2. Ejecutamos la lógica del carrito
     this.carritoService.agregarProducto(producto);
     this.cdRef.detectChanges();
+
+    // 3. Quitamos el efecto tras 300ms de forma segura
+    setTimeout(() => {
+      this.productoEfectoId = null;
+      this.cdRef.detectChanges(); // Esto obliga al botón a volver a gris/blanco
+    }, 300);
   }
 
   trackByProductoId(index: number, producto: any): number {
