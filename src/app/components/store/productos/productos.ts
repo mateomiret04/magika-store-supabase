@@ -59,13 +59,24 @@ export class Productos implements OnInit {
   }
 
   optimizarImagen(url: string): string {
-    if (!url || url === '') return 'assets/placeholder-magika.jpg';
-    if (url.includes('supabase.co')) {
-      return `${url}?width=500&quality=75&format=webp`;
+    // 1. Validación de seguridad
+    if (!url || typeof url !== 'string' || url.trim() === '') {
+      return 'assets/placeholder-magika.jpg';
     }
+
+    // 2. Si es de Supabase, optimizamos sin forzar el formato webp
+    if (url.includes('supabase.co')) {
+      // Usamos un separador inteligente por si la URL ya tiene parámetros
+      const separador = url.includes('?') ? '&' : '?';
+      
+      // Eliminamos '&format=webp' que es lo que disparaba el Error 400
+      return `${url}${separador}width=500&quality=75`;
+    }
+
+    // 3. Si no es de Supabase, devolvemos la URL original
     return url;
   }
-
+  
   cargarProductos() {
     this.productoService.getProductos().subscribe({
       next: (data: any[]) => {
@@ -92,7 +103,7 @@ export class Productos implements OnInit {
     this.listaFiltrada = this.listaProductos.filter(p => {
       const coincideCategoria = this.categoriaActual === 'Todas' || p.categoria === this.categoriaActual;
       const coincideTexto = 
-        p.nombre.toLowerCase().includes(term) || 
+        (p.nombre && p.nombre.toLowerCase().includes(term)) || 
         (p.descripcion && p.descripcion.toLowerCase().includes(term)) ||
         (p.categoria && p.categoria.toLowerCase().includes(term));
       return coincideCategoria && coincideTexto;
@@ -111,17 +122,13 @@ export class Productos implements OnInit {
   }
 
   agregarAlCarrito(producto: any) {
-    // 1. Disparamos el efecto visual
     this.productoEfectoId = producto.id;
-    
-    // 2. Ejecutamos la lógica del carrito
     this.carritoService.agregarProducto(producto);
     this.cdRef.detectChanges();
 
-    // 3. Quitamos el efecto tras 300ms de forma segura
     setTimeout(() => {
       this.productoEfectoId = null;
-      this.cdRef.detectChanges(); // Esto obliga al botón a volver a gris/blanco
+      this.cdRef.detectChanges();
     }, 300);
   }
 
